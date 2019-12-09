@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
     <head>
@@ -13,28 +13,6 @@
             rel='stylesheet'>
     </head>
     <body>
-        <div class="navbar navbar-fixed-top">
-            <div class="navbar-inner">
-                <div class="container">
-                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
-                        <i class="icon-reorder shaded"></i></a><a class="brand" href="index.html">kazuのService</a>
-                    <div class="nav-collapse collapse navbar-inverse-collapse">
-                        <ul class="nav pull-right">
-                            <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">テーマ別
-                                <b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#">考え中</a></li>
-                                    <li><a href="#">考え中</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="kotsuhi.html">交通費 </a></li>
-                        </ul>
-                    </div>
-                    <!-- /.nav-collapse -->
-                </div>
-            </div>
-            <!-- /navbar-inner -->
-        </div>
         <!-- /navbar -->
         <div class="wrapper">
             <div class="container">
@@ -49,14 +27,16 @@
                                 </div>
                                 <div class="module-option clearfix">
                                     <div class="pull-left">
-                                        <a class="btn btn-large btn-info" href="thema-materials-list.html">テーマ資材</a>
-                                        <a class="btn btn-large btn-info">倉庫資材登録</a>
+                                        <a class="btn btn-large btn-info" href="index.html">倉庫資材一覧へ</a>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+
+
                 <div class="row">
                     <!--/.span3-->
                     <div class="span12">
@@ -64,10 +44,10 @@
                             <!--/.module-->
                             <div class="module">
                                 <div class="module-head">
-                                    <h3>倉庫資材</h3>
+                                    <h3>倉庫資材一覧</h3>
                                 </div>
                                 <div class="module-body table">
-                                    <table cellpadding="0" cellspacing="0" border="0" class="datatable-1 table table-bordered table-striped	 display"
+                                    <table id="materials-list" cellpadding="0" cellspacing="0" border="0" class="datatable-1 table table-bordered table-striped  display"
                                         width="100%">
                                         <thead>
                                             <tr>
@@ -88,6 +68,9 @@
                                                 </th>
                                                 <th>
                                                     備考
+                                                </th>
+                                                <th>
+                                                    機能？
                                                 </th>
                                             </tr>
                                         </thead>
@@ -111,69 +94,36 @@
                                                 <td class="center">
                                                     モンベル産
                                                 </td>
-                                            </tr>
-                                            <tr class="even gradeC">
-                                                <td>
-                                                    山
-                                                </td>
-                                                <td>
-                                                    アルミックシート
-                                                </td>
-                                                <td></td>
                                                 <td class="center">
-                                                    2
-                                                </td>
-                                                <td class="center">
-                                                    セット
-                                                </td>
-                                                <td class="center">
+                                                    <a class="btn btn-standard btn-info add-list">一覧へ追加</a>
                                                 </td>
                                             </tr>
-                                            <tr class="even gradeC">
-                                                <td>
-                                                    全体
-                                                </td>
-                                                <td>
-                                                    なべ
-                                                </td>
-                                                <td>
-                                                    25cm
-                                                </td>
-                                                <td class="center">
-                                                    2
-                                                </td>
-                                                <td class="center">
-                                                    ヶ
-                                                </td>
-                                                <td class="center">
-                                                </td>
-                                            </tr>
-                                            <tr class="even gradeC">
-                                                <td>
-                                                    全体
-                                                </td>
-                                                <td>
-                                                    ナタ
-                                                </td>
-                                                <td>
-                                                    右きき
-                                                </td>
-                                                <td class="center">
-                                                    15
-                                                </td>
-                                                <td class="center">
-                                                    本
-                                                </td>
-                                                <td class="center">
-                                                </td>
-                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            <!--/.module-->
+                        </div>
+                        <!--/.content-->
+                    </div>
+                    <!--/.span9-->
+                </div>
 
-                                        </tbody>
-                                        <tfoot>
+
+                <div class="row">
+                    <!--/.span3-->
+                    <div class="span12">
+                        <div class="content">
+                            <!--/.module-->
+                            <div class="module">
+                                <div class="module-head">
+                                    <h3>資材一覧</h3>
+                                </div>
+                                <div class="module-body table">
+                                    <table id="thema-list" cellpadding="0" cellspacing="0" border="0" class="datatable-1 table table-bordered table-striped	 display"
+                                        width="100%">
+                                        <thead>
                                             <tr>
-                                                <th>
-                                                    カテゴリ
-                                                </th>
                                                 <th>
                                                     名称
                                                 </th>
@@ -189,6 +139,25 @@
                                                 <th>
                                                     備考
                                                 </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="odd gradeX">
+                                                <td>
+                                                    携帯トイレ
+                                                </td>
+                                                <td>
+                                                    大
+                                                </td>
+                                                <td class="center">
+                                                    5
+                                                </td>
+                                                <td class="center">
+                                                    セット
+                                                </td>
+                                                <td class="center">
+                                                    モンベル産
+                                                </td>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -217,4 +186,34 @@
         <script src="scripts/datatables/jquery.dataTables.js" type="text/javascript"></script>
         <script src="scripts/common.js" type="text/javascript"></script>
 
+        <script>
+            $(document).on('click', '.add-list', function(){
+                clickAddList(this);
+            });
+
+            function clickAddList(obj){
+
+                var $td = $('.add-list').parents('tr').children('td');
+                
+                var html = "<tr>";
+                html += "<td>" + $td.eq(1).text() + "</td>";
+                html += "<td>" + $td.eq(2).text() + "</td>";
+                html += "<td>" + $td.eq(3).text() + "</td>";
+                html += "<td>" + $td.eq(4).text() + "</td>";
+                html += "<td>" + $td.eq(5).text() + "</td>";              
+
+                html += "</tr>";
+
+                $('#thema-list tbody').append(html);
+
+/*                $.each($td , function(){
+                    alert($(this).html());
+                });*/
+
+
+
+
+            }
+        </script>
     </body>
+
