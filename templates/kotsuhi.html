@@ -13,7 +13,7 @@
                             <li><a href="#">考え中</a></li>
                         </ul>
                     </li>
-                    <li><a href="kotsuhi.html">交通費 </a></li>
+                    <li><a href="kotsuhi">交通費</a></li>
                 </ul>
             </div>
             <!-- /.nav-collapse -->
@@ -35,8 +35,8 @@
                         </div>
                         <div class="module-option clearfix">
                             <div class="pull-left">
-                                <a class="btn btn-large btn-info" href="thema-materials-list.html">テーマ資材</a>
-                                <a class="btn btn-large btn-info">倉庫資材登録</a>
+                                <a class="btn btn-large btn-info">行追加</a>
+                                <a class="btn btn-large btn-info">登録</a>
                             </div>
                         </div>
                     </div>
@@ -53,6 +53,7 @@
                             <h3>倉庫資材</h3>
                         </div>
                         <div class="module-body table">
+                            <form action="">
                             <table cellpadding="0" cellspacing="0" border="0" class="datatable-1 table table-bordered table-striped	 display"
                                 width="100%">
                                 <thead>
@@ -74,20 +75,21 @@
                                 <tbody>
                                     <tr class="odd gradeX">
                                         <td>
-                                            <input type="text">
+                                            <input type="text" name="iki">
                                         </td>
                                         <td>
-                                            <input type="text">
+                                            <input type="text" name="kaeri">
                                         </td>
                                         <td>
-                                            <input type="text">
+                                            <input type="text" name="kingaku">
                                         </td>
                                         <td class="center">
-                                            <input type="text">
+                                            <input type="text" name="bikou">
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
+                            </form>
                         </div>
                     </div>
                     <!--/.module-->
@@ -104,5 +106,29 @@
     <div class="container">
         <b class="copyright">&copy; 2014 Edmin - EGrappler.com </b>All rights reserved.
     </div>
-  </div>
+</div>
+<div style="display: none;">
+    <table>
+        <tr id="row-origin" class="odd gradeX">
+                <td>
+                    <input type="text" name="iki">
+                </td>
+                <td>
+                    <input type="text" name="kaeri">
+                </td>
+                <td>
+                    <input type="text" name="kingaku">
+                </td>
+                <td class="center">
+                    <input type="text" name="bikou">
+                </td>
+            </tr>
+    </table>
+</div>
+<script>
+    function addRow(){
+
+    }
+
+</script>
 {{end}}
