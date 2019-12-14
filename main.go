@@ -13,24 +13,41 @@ func main() {
 
 	router.LoadHTMLGlob("templates/*.html")
 
-	router.GET("/index", func(ctx *gin.Context) {
-		html := template.Must(template.ParseFiles("templates/index.html", "templates/base.html"))
-		router.SetHTMLTemplate(html)
-		ctx.HTML(200, "base.html", gin.H{})
-	})
+	router.GET("/index", htmlForward(router))
+	router.GET("/kotsuhi", htmlForward(router))
 
-	router.GET("/kotsuhi", func(ctx *gin.Context) {
-		html := template.Must(template.ParseFiles("templates/kotsuhi.html", "templates/base.html"))
-		router.SetHTMLTemplate(html)
-		ctx.HTML(200, "base.html", gin.H{})
-	})
-
-	//router.GET("/test", viewTest)
 	router.Run()
 }
 
-// func viewTest(ctx *gin.Context) func *gin.Context {
-// 	return func(ctx2 *gin.Context) {
-// 		ctx.HTML(200, "test.html", gin.H{})
-// 	}
-// }
+func htmlForward(router *gin.Engine) func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		path := ctx.Request.URL.Path
+		html := template.Must(template.ParseFiles("templates"+path+".html", "templates/base.html"))
+		router.SetHTMLTemplate(html)
+		actionPath := path[1:len(path)]
+
+		form := gin.H{}
+
+		switch actionPath {
+		case "", "index":
+			form = viewIndex()
+		case "kotsuhi":
+			form = viewKotsuhi()
+		default:
+		}
+
+		ctx.HTML(200, "base.html", form)
+	}
+}
+
+func viewIndex() gin.H {
+	return gin.H{
+		"title": "INDEX",
+	}
+}
+
+func viewKotsuhi() gin.H {
+	return gin.H{
+		"title": "KOTSUHI",
+	}
+}
