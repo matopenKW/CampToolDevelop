@@ -2,8 +2,8 @@ package apps
 
 import "github.com/gin-gonic/gin"
 
-func ViewIndex() gin.H {
+func ViewKotsuhi() gin.H {
 	return gin.H{
-		"title": "INDEX",
+		"title": "KOTSUHI",
 	}
 }

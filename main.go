@@ -3,6 +3,8 @@ package main
 import (
 	"html/template"
 
+	"CampToolDevelop/internal/apps"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -30,24 +32,12 @@ func htmlForward(router *gin.Engine) func(ctx *gin.Context) {
 
 		switch actionPath {
 		case "", "index":
-			form = viewIndex()
+			form = apps.ViewIndex()
 		case "kotsuhi":
-			form = viewKotsuhi()
+			form = apps.ViewKotsuhi()
 		default:
 		}
 
 		ctx.HTML(200, "base.html", form)
-	}
-}
-
-func viewIndex() gin.H {
-	return gin.H{
-		"title": "INDEX",
-	}
-}
-
-func viewKotsuhi() gin.H {
-	return gin.H{
-		"title": "KOTSUHI",
 	}
 }
