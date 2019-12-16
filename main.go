@@ -4,11 +4,18 @@ import (
 	"html/template"
 
 	"CampToolDevelop/internal/apps"
+	"CampToolDevelop/pkg/db"
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+
+	_, err := db.OpenFirebase()
+	if err != nil {
+		log.Fatalf("erro in new db client. reason : %v\n", err)
+	}
 
 	router := gin.Default()
 	router.Static("assets", "./assets")
