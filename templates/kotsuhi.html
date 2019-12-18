@@ -73,20 +73,22 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    {{range .list}}
                                     <tr class="odd gradeX">
                                         <td>
-                                            <input type="text" name="iki">
+                                            <input type="text" name="start" value="{{.Start}}">
                                         </td>
                                         <td>
-                                            <input type="text" name="kaeri">
+                                            <input type="text" name="end" value="{{.End}}">
                                         </td>
                                         <td>
-                                            <input type="text" name="kingaku">
+                                            <input type="text" name="plice" value="{{.Price}}">
                                         </td>
                                         <td class="center">
-                                            <input type="text" name="bikou">
+                                            <input type="text" name="bikou" value="">
                                         </td>
                                     </tr>
+                                    {{end}}
                                 </tbody>
                             </table>
                             </form>

@@ -50,8 +50,8 @@ func ViewKotsuhi(client *firestore.Client) (gin.H, error) {
 }
 
 type Kotsuhi struct {
-	end          string
-	start        string
-	roundTripFlg int64
-	price        int64
+	End          string
+	Start        string
+	RoundTripFlg int64
+	Price        int64
 }
