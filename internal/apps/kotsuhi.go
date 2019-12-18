@@ -13,8 +13,7 @@ func ViewKotsuhi(client *firestore.Client) (gin.H, error) {
 
 	ctx := context.Background()
 
-	//	list := make([]*Kotsuhi, 1)
-	list := make([]map[string]interface{}, 1, 10)
+	list := make([]*Kotsuhi, 0, 10)
 
 	iter := client.Collection("tomoki").Documents(ctx)
 	for {
@@ -25,13 +24,24 @@ func ViewKotsuhi(client *firestore.Client) (gin.H, error) {
 		if err != nil {
 			return nil, err
 		}
-		list = append(list, doc.Data())
+
+		data := doc.Data()
+
+		kotsuhi := &Kotsuhi{
+			data["end"].(string),
+			data["start"].(string),
+			data["round_trip_flg"].(int64),
+			data["price"].(int64),
+		}
+
+		list = append(list, kotsuhi)
 
 		// data := doc.Data()
 		// for key, value := range data {
 		// 	fmt.Printf("key: %v, value: %v\n", key, value)
 		// }
 	}
+	defer client.Close()
 
 	return gin.H{
 		"title": "KOTSUHI",
@@ -40,6 +50,8 @@ func ViewKotsuhi(client *firestore.Client) (gin.H, error) {
 }
 
 type Kotsuhi struct {
-	end, start          string
-	roundTripFlg, price int
+	end          string
+	start        string
+	roundTripFlg int64
+	price        int64
 }

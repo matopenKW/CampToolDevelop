@@ -22,6 +22,10 @@ func TestViewKotsuhi(t *testing.T) {
 		t.Fatalf("failed test %#v", err)
 	}
 
-	t.Log(form)
+	list := form["list"].([]*apps.Kotsuhi)
+
+	for _, kotsuhi := range list {
+		t.Log(kotsuhi)
+	}
 
 }
