@@ -12,11 +12,6 @@ import (
 
 func main() {
 
-	_, err := db.OpenFirebase()
-	if err != nil {
-		log.Fatalf("erro in new db client. reason : %v\n", err)
-	}
-
 	router := gin.Default()
 	router.Static("assets", "./assets")
 
@@ -35,14 +30,23 @@ func htmlForward(router *gin.Engine) func(ctx *gin.Context) {
 		router.SetHTMLTemplate(html)
 		actionPath := path[1:len(path)]
 
+		// firebase接続
+		client, err := db.OpenFirebase()
+		if err != nil {
+			log.Fatalf("erro in new db client. reason : %v\n", err)
+		}
 		form := gin.H{}
 
 		switch actionPath {
 		case "", "index":
-			form = apps.ViewIndex()
+			form, err = apps.ViewIndex(client)
 		case "kotsuhi":
-			form = apps.ViewKotsuhi()
+			form, err = apps.ViewKotsuhi(client)
 		default:
+		}
+
+		if err != nil {
+			log.Fatalf("erro in new db client. reason : %v\n", err)
 		}
 
 		ctx.HTML(200, "base.html", form)

@@ -1,9 +1,13 @@
 package apps
 
-import "github.com/gin-gonic/gin"
+import (
+	"cloud.google.com/go/firestore"
+	_ "firebase.google.com/go"
+	"github.com/gin-gonic/gin"
+)
 
-func ViewIndex() gin.H {
+func ViewIndex(_ *firestore.Client) (gin.H, error) {
 	return gin.H{
 		"title": "INDEX",
-	}
+	}, nil
 }

@@ -1,9 +1,14 @@
 package apps
 
-import "github.com/gin-gonic/gin"
+import (
+	"cloud.google.com/go/firestore"
 
-func ViewKotsuhi() gin.H {
+	"github.com/gin-gonic/gin"
+)
+
+func ViewKotsuhi(client *firestore.Client) (gin.H, error) {
+
 	return gin.H{
 		"title": "KOTSUHI",
-	}
+	}, nil
 }
