@@ -1,1 +1,3 @@
-assets/* linguist-documentation
+docs/* linguist-documentation
+assets/bootstrap/* linguist-documentation
+assets/script/* linguist-documentation
