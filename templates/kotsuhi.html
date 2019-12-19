@@ -36,7 +36,7 @@
                         <div class="module-option clearfix">
                             <div class="pull-left">
                                 <a class="btn btn-large btn-info">行追加</a>
-                                <a class="btn btn-large btn-info">登録</a>
+                                <a class="btn btn-large btn-info" id="registBtn">登録</a>
                             </div>
                         </div>
                     </div>
@@ -53,7 +53,7 @@
                             <h3>倉庫資材</h3>
                         </div>
                         <div class="module-body table">
-                            <form action="">
+                            <form action="/kotsuhi:regist" method="POST">
                             <table cellpadding="0" cellspacing="0" border="0" class="datatable-1 table table-bordered table-striped	 display"
                                 width="100%">
                                 <thead>
@@ -128,6 +128,11 @@
     </table>
 </div>
 <script>
+
+    $(document).on("click", "#registBtn", function(){
+        $("form").submit();
+    });
+
     function addRow(){
 
     }

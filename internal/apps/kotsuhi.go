@@ -1,21 +1,47 @@
 package apps
 
 import (
+	"CampToolDevelop/pkg/util"
 	"cloud.google.com/go/firestore"
 	"context"
-
 	"github.com/gin-gonic/gin"
+	"log"
 
+	"errors"
 	"google.golang.org/api/iterator"
+	"net/http"
 )
 
-func ViewKotsuhi(client *firestore.Client) (gin.H, error) {
+type Kotsuhi struct {
+	End          string
+	Start        string
+	RoundTripFlg int64
+	Price        int64
+}
 
-	ctx := context.Background()
+func ExeKotsuhi(req *http.Request, client *firestore.Client) (gin.H, error) {
 
+	cmd := util.SubstrAfter(req.URL.Path, ":")
+
+	log.Println(cmd)
+
+	switch cmd {
+	case "/kotsuhi":
+		return view(req, client)
+	case "regist":
+		return regist(req, client)
+	default:
+		return nil, errors.New("invalid command")
+	}
+}
+
+func view(req *http.Request, client *firestore.Client) (gin.H, error) {
+
+	iter := client.Collection("tomoki").Documents(context.Background())
+
+	// array for return
 	list := make([]*Kotsuhi, 0, 10)
 
-	iter := client.Collection("tomoki").Documents(ctx)
 	for {
 		doc, err := iter.Next()
 		if err == iterator.Done {
@@ -35,13 +61,7 @@ func ViewKotsuhi(client *firestore.Client) (gin.H, error) {
 		}
 
 		list = append(list, kotsuhi)
-
-		// data := doc.Data()
-		// for key, value := range data {
-		// 	fmt.Printf("key: %v, value: %v\n", key, value)
-		// }
 	}
-	defer client.Close()
 
 	return gin.H{
 		"title": "KOTSUHI",
@@ -49,9 +69,7 @@ func ViewKotsuhi(client *firestore.Client) (gin.H, error) {
 	}, nil
 }
 
-type Kotsuhi struct {
-	End          string
-	Start        string
-	RoundTripFlg int64
-	Price        int64
+func regist(req *http.Request, client *firestore.Client) (gin.H, error) {
+
+	return view(req, client)
 }
