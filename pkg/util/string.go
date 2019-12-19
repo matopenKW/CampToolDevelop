@@ -16,7 +16,7 @@ func substr(str, sep string, upToStart bool) string {
 	index := strings.Index(str, sep)
 	if index > -1 {
 		if upToStart {
-			str = str[1:index]
+			str = str[0:index]
 		} else {
 			str = str[index+1 : len(str)]
 		}
