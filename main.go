@@ -45,13 +45,14 @@ func main() {
 	}
 	defer client.Close()
 
-	router.POST("/", htmlForward(router, client, templatePathMap["index"]))
 	router.GET("/", htmlForward(router, client, templatePathMap["index"]))
+	router.POST("/", htmlForward(router, client, templatePathMap["index"]))
 
-	router.POST("/index", htmlForward(router, client, templatePathMap["index"]))
 	router.GET("/index", htmlForward(router, client, templatePathMap["index"]))
+	router.POST("/index", htmlForward(router, client, templatePathMap["index"]))
 
 	router.GET("/kotsuhi", htmlForward(router, client, templatePathMap["kotsuhi"]))
+	router.POST("/kotsuhi", htmlForward(router, client, templatePathMap["kotsuhi"]))
 	router.POST("kotsuhi:regist", htmlForward(router, client, templatePathMap["kotsuhi"]))
 
 	router.Run()
