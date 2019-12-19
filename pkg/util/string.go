@@ -5,16 +5,16 @@ import (
 )
 
 func SubstrBefore(str, sep string) string {
-	return substr(str, true)
+	return substr(str, sep, true)
 }
 
 func SubstrAfter(str, sep string) string {
-	return substr(str, false)
+	return substr(str, sep, false)
 }
 
-func substr(str string, upToStart bool) string {
-	index := strings.Index(str, ":")
-	if index > 0 {
+func substr(str, sep string, upToStart bool) string {
+	index := strings.Index(str, sep)
+	if index > -1 {
 		if upToStart {
 			str = str[1:index]
 		} else {
