@@ -1,11 +1,11 @@
 package apps
 
 import (
+	"CampToolDevelop/pkg/db"
 	"CampToolDevelop/pkg/util"
 	"cloud.google.com/go/firestore"
 	"context"
 	"github.com/gin-gonic/gin"
-	"log"
 
 	"errors"
 	"google.golang.org/api/iterator"
@@ -17,13 +17,12 @@ type Kotsuhi struct {
 	Start        string
 	RoundTripFlg int64
 	Price        string
+	Bikou        string
 }
 
 func ExeKotsuhi(req *http.Request, client *firestore.Client) (gin.H, error) {
 
 	cmd := util.SubstrAfter(req.URL.Path, ":")
-
-	log.Println(cmd)
 
 	switch cmd {
 	case "/kotsuhi":
@@ -37,7 +36,16 @@ func ExeKotsuhi(req *http.Request, client *firestore.Client) (gin.H, error) {
 
 func view(req *http.Request, client *firestore.Client) (gin.H, error) {
 
-	iter := client.Collection("tomoki").Documents(context.Background())
+	req.ParseForm()
+
+	var userId string
+	if req.Form["userId"] != nil {
+		userId = req.Form["userId"][0]
+	} else {
+		userId = ""
+	}
+
+	iter := client.Collection(userId).Documents(context.Background())
 
 	// array for return
 	list := make([]*Kotsuhi, 0, 10)
@@ -52,52 +60,48 @@ func view(req *http.Request, client *firestore.Client) (gin.H, error) {
 		}
 
 		data := doc.Data()
-		log.Println(data)
 
 		kotsuhi := &Kotsuhi{
-			isNotNil(data["End"]),
-			isNotNil(data["Start"]),
-			isNotNilNum(data["roundTripFlg"]),
-			isNotNil(data["Price"]),
+			data["End"].(string),
+			data["Start"].(string),
+			nonNilInt(data["roundTripFlg"]),
+			data["Price"].(string),
+			"",
 		}
 
 		list = append(list, kotsuhi)
 	}
 
 	return gin.H{
-		"title": "KOTSUHI",
-		"list":  list,
+		"title":  "KOTSUHI",
+		"userId": userId,
+		"list":   list,
 	}, nil
 }
 
 func regist(req *http.Request, client *firestore.Client) (gin.H, error) {
 
+	ctx := context.Background()
+
+	ref := client.Collection("tomoki")
+	db.DeleteCollection(ctx, client, ref, 10)
+
 	req.ParseForm()
-
 	rowSize := len(req.Form["start"])
-
-	_, err := client.Collection("tomoki").Doc("DC").Delete(context.Background())
-	if err != nil {
-		// Handle any errors in an appropriate way, such as returning them.
-		log.Printf("An error has occurred: %s", err)
-	}
-
 	for i := 0; i < rowSize; i++ {
-		log.Printf("start:%v %T/n", req.Form["start"][i], req.Form["start"][i])
-		log.Printf("end:%v %T/n", req.Form["end"][i], req.Form["end"][i])
-		log.Printf("plice:%v %T/n", req.Form["plice"][i], req.Form["plice"][i])
-		log.Printf("bikou:%v %T/n", req.Form["bikou"][i], req.Form["bikou"][i])
 
 		kotsuhi := &Kotsuhi{
 			req.Form["end"][i],
 			req.Form["start"][i],
 			//req.Form["round_trip_flg"][i].(int64),
 			0,
+			// int に置換する事
 			req.Form["plice"][i],
+			req.Form["bikou"][i],
 		}
 
 		ref := client.Collection("tomoki").NewDoc()
-		_, err := ref.Set(context.Background(), kotsuhi)
+		_, err := ref.Set(ctx, kotsuhi)
 
 		//		_, _, err := client.Collection("tomoki").Add(context.Background(), kotsuhi)
 
@@ -110,56 +114,11 @@ func regist(req *http.Request, client *firestore.Client) (gin.H, error) {
 	return view(req, client)
 }
 
-func isNotNil(obj interface{}) string {
-	if obj != nil {
-		return obj.(string)
-	} else {
-		return ""
-	}
-}
+func nonNilInt(t interface{}) int64 {
 
-func isNotNilNum(obj interface{}) int64 {
-	if obj != nil {
-		return obj.(int64)
+	if t != nil {
+		return t.(int64)
 	} else {
 		return 0
 	}
 }
-
-// func deleteCollection(ctx context.Context, client *firestore.Client,
-// 	ref *firestore.CollectionRef, batchSize int) error {
-
-// 	for {
-// 		// Get a batch of documents
-// 		iter := ref.Limit(batchSize).Documents(ctx)
-// 		numDeleted := 0
-
-// 		// Iterate through the documents, adding
-// 		// a delete operation for each one to a
-// 		// WriteBatch.
-// 		batch := client.Batch()
-// 		for {
-// 			doc, err := iter.Next()
-// 			if err == iterator.Done {
-// 				break
-// 			}
-// 			if err != nil {
-// 				return err
-// 			}
-
-// 			batch.Delete(doc.Ref)
-// 			numDeleted++
-// 		}
-
-// 		// If there are no documents to delete,
-// 		// the process is over.
-// 		if numDeleted == 0 {
-// 			return nil
-// 		}
-
-// 		_, err := batch.Commit(ctx)
-// 		if err != nil {
-// 			return err
-// 		}
-// 	}
-// }
