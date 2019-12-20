@@ -183,10 +183,6 @@
 			"revisionTime": "2019-11-11T20:22:24Z"
 		},
 		{
-			"path": "github.com/go-playground/validator/v10",
-			"revision": ""
-		},
-		{
 			"checksumSHA1": "LHNzQwau1zPeFPPG5zbNf8AgUOQ=",
 			"path": "github.com/golang/groupcache/lru",
 			"revision": "611e8accdfc92c4187d399e95ce826046d4c8d73",
