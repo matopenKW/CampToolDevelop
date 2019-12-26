@@ -14,6 +14,4 @@ func TestHtmlForward(t *testing.T) {
 		t.Fatalf("failed test %#v", err)
 	}
 
-	htmlForward(router, client)
-
 }

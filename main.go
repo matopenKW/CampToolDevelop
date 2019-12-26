@@ -12,6 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
+
 )
 
 var templatePathMap map[string]string
