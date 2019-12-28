@@ -38,14 +38,18 @@ func view(req *http.Request, client *firestore.Client) (gin.H, error) {
 
 	req.ParseForm()
 
-	var userId string
+	userID := ""
 	if req.Form["userId"] != nil {
-		userId = req.Form["userId"][0]
+		userID = req.Form["userId"][0]
 	} else {
-		userId = ""
+		return gin.H{
+			"title":  "KOTSUHI",
+			"userId": userID,
+			"list":   make([]*Kotsuhi, 0, 10),
+		}, nil
 	}
 
-	iter := client.Collection(userId).Documents(context.Background())
+	iter := client.Collection(userID).Documents(context.Background())
 
 	// array for return
 	list := make([]*Kotsuhi, 0, 10)
@@ -74,7 +78,7 @@ func view(req *http.Request, client *firestore.Client) (gin.H, error) {
 
 	return gin.H{
 		"title":  "KOTSUHI",
-		"userId": userId,
+		"userId": userID,
 		"list":   list,
 	}, nil
 }
