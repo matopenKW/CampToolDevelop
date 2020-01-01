@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 
+	"encoding/json"
 )
 
 var templatePathMap map[string]string
@@ -20,7 +21,7 @@ var templatePathMap map[string]string
 func init() {
 
 	templatePathMap = make(map[string]string)
-	templateDir := "templates/"
+	templateDir := "../templates/"
 
 	files, err := ioutil.ReadDir(templateDir)
 	if err != nil {
@@ -35,9 +36,9 @@ func init() {
 func main() {
 
 	router := gin.Default()
-	router.Static("assets", "./assets")
+	router.Static("../web", ".././web")
 
-	router.LoadHTMLGlob("templates/*.html")
+	router.LoadHTMLGlob("../templates/*.html")
 
 	// firebase接続
 	client, err := db.OpenFirebase()
@@ -52,9 +53,11 @@ func main() {
 	router.GET("/index", htmlForward(router, client, templatePathMap["index"]))
 	router.POST("/index", htmlForward(router, client, templatePathMap["index"]))
 
-	router.GET("/kotsuhi", htmlForward(router, client, templatePathMap["kotsuhi"]))
-	router.POST("/kotsuhi", htmlForward(router, client, templatePathMap["kotsuhi"]))
-	router.POST("kotsuhi:regist", htmlForward(router, client, templatePathMap["kotsuhi"]))
+	router.GET("/carfare", htmlForward(router, client, templatePathMap["carfare"]))
+	router.POST("/carfare", htmlForward(router, client, templatePathMap["carfare"]))
+	router.POST("/carfare:cmd/insert", jsonForward(client))
+	router.POST("/carfare:cmd/update", jsonForward(client))
+	router.POST("/carfare:cmd/delete", jsonForward(client))
 
 	router.Run()
 }
@@ -66,15 +69,15 @@ func htmlForward(router *gin.Engine, client *firestore.Client, templatePath stri
 		router.SetHTMLTemplate(html)
 
 		var err error
-		form := gin.H{}
+		form := map[string]interface{}{}
 
 		actionPath := util.SubstrBefore(util.SubstrAfter(ctx.Request.URL.Path, "/"), ":")
 
 		switch actionPath {
 		case "", "index":
 			//form, err = apps.ViewIndex(client)
-		case "kotsuhi":
-			form, err = apps.ExeKotsuhi(ctx.Request, client)
+		case "carfare":
+			form, err = apps.ExeCarfare(ctx.Request, client)
 		default:
 		}
 
@@ -82,5 +85,24 @@ func htmlForward(router *gin.Engine, client *firestore.Client, templatePath stri
 			log.Fatalf("erro in new db client. reason : %v\n", err)
 		}
 		ctx.HTML(200, "base.html", form)
+	}
+}
+
+func jsonForward(client *firestore.Client) func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+
+		form, err := apps.ExeCarfare(ctx.Request, client)
+
+		if err != nil {
+			log.Fatalf("erro in new db client. reason : %v\n", err)
+		}
+
+		jsonForm, err := json.Marshal(form)
+		if err != nil {
+			log.Fatalf("erro in new db client. reason : %v\n", err)
+		}
+
+		log.Println(string(jsonForm))
+		ctx.JSON(200, string(jsonForm))
 	}
 }

@@ -10,7 +10,7 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-const keyjson = "pkg/conf/key.json"
+const keyjson = "../pkg/conf/key.json"
 
 func OpenFirebase() (*firestore.Client, error) {
 	opt := option.WithCredentialsFile(keyjson)
@@ -25,6 +25,34 @@ func OpenFirebase() (*firestore.Client, error) {
 	}
 
 	return client, nil
+}
+
+func SelectDocuments(client *firestore.Client, userID string) ([]map[string]interface{}, error) {
+
+	list := make([]map[string]interface{}, 0, 10)
+
+	colle := client.Collection(userID)
+	if colle == nil {
+		return nil, nil
+	}
+
+	iter := colle.Documents(context.Background())
+
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+
+		data := doc.Data()
+		data["DocumentId"] = doc.Ref.ID
+		list = append(list, data)
+	}
+
+	return list, nil
 }
 
 func DeleteCollection(ctx context.Context, client *firestore.Client,
@@ -63,4 +91,39 @@ func DeleteCollection(ctx context.Context, client *firestore.Client,
 			return err
 		}
 	}
+}
+
+func DeleteDocument(ctx context.Context, client *firestore.Client, userId string, documentId string) error {
+
+	doc := client.Collection(userId).Doc(documentId)
+
+	batch := client.Batch()
+
+	batch.Delete(doc)
+
+	_, err := batch.Commit(ctx)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func UpdateDocument(ctx context.Context, client *firestore.Client, userId string, documentId string, data map[string]interface{}) error {
+
+	_, err := client.Collection(userId).Doc(documentId).Set(ctx, data)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func InsertDocument(ctx context.Context, client *firestore.Client, userId string, data map[string]interface{}) (string, error) {
+
+	doc, _, err := client.Collection(userId).Add(ctx, data)
+	if err != nil {
+		return "", err
+	}
+
+	return doc.ID, nil
 }

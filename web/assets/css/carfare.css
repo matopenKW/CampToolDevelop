@@ -1,0 +1,80 @@
+#data-arae {
+    height: 500px;
+}
+
+#dataTable {
+    width: 100%;
+}
+
+.btn-area {
+    display: none;
+    color: #fff;
+}
+
+.btnInsert {
+    display: none;
+}
+
+.btnInsert ,.btnUpdate, .btnDelete {
+    width: 30%;
+}
+
+p {
+  font-weight: bold;
+  text-align: center;
+  margin: 60px auto 40px;
+}
+table {
+  margin: 20px auto;
+}
+table th {
+  background: #e9727e;
+  border: solid 1px #ccc;
+  color: #fff;
+  padding: 10px;
+}
+table td {
+    border: solid 1px #ccc;
+    padding: 10px;
+}
+table td:first-child {
+    background: #fbf5f5;
+  }
+
+@media screen and (max-width: 1000px) {
+table {
+    width: 80%;
+}
+table .thead {
+    display: none;
+}
+table tr {
+    width: 100%;
+}
+table td {
+    display: none;
+    text-align: right;
+    width: 100%;
+}
+
+table .select td {
+    display: block;
+}
+table td:first-child {
+    display: block;
+    background: #007bff;
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+}
+table td:before {
+    content: attr(data-label);
+    float: left;
+    font-weight: bold;
+    margin-right: 10px;
+}
+}
+
+#dummy {
+    display: none;
+}
