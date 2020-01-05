@@ -27,7 +27,7 @@ func OpenFirebase() (*firestore.Client, error) {
 	return client, nil
 }
 
-func SelectDocuments(client *firestore.Client, userID string) ([]map[string]interface{}, error) {
+func SelectDocuments(client *firestore.Client, userID string, orderBy func() (string, firestore.Direction)) ([]map[string]interface{}, error) {
 
 	list := make([]map[string]interface{}, 0, 10)
 
@@ -36,7 +36,7 @@ func SelectDocuments(client *firestore.Client, userID string) ([]map[string]inte
 		return nil, nil
 	}
 
-	iter := colle.Documents(context.Background())
+	iter := colle.OrderBy(orderBy()).Documents(context.Background())
 
 	for {
 		doc, err := iter.Next()

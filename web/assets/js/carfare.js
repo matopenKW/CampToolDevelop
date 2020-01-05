@@ -10,10 +10,12 @@ $(function(){
         addRow();
     });
 
-    $(document).on('click', '.dataTable-row', function(){
-        var $tr = $('.dataTable-row');
-        $tr.removeClass('select');
-        $(this).addClass('select');
+    $(document).on('click', '.date-label', function(){
+        clickRow(this);
+    });
+
+    $(document).on('change', '.data', function(){
+        changeDate(this);
     });
 
     $(document).on('click', '.btnInsert', function(){
@@ -46,13 +48,29 @@ function addRow(){
     var date =  ("0"+today.getDate()).slice(-2)
     var targetDate = '' + year +  month + date;
 
-    $tr.find('.date').html(targetDate);
+    $tr.find('.date-label').html(targetDate);
+    $tr.find('.date').val(targetDate);
     $('#dataTable').append($tr);
 
     var $addRow = $('#dataTable tr:last');
     $addRow.find('.btnInsert').show();
     $addRow.find('.btnUpdate').hide();
+}
 
+function clickRow(obj){
+    var $tr = $(obj).parent('.dataTable-row');
+    var open = !$tr.hasClass('select');
+
+    var $trs = $('.dataTable-row');
+    $trs.removeClass('select');
+    if (open) {
+        $tr.addClass('select');
+    }
+}
+
+function changeDate(obj){
+    var $tr = $(obj).parents('.dataTable-row');
+    $tr.find('.date-label').html(obj.value);
 }
 
 function insert(obj){
@@ -128,6 +146,7 @@ function getData(idx){
     var data = {};
     data['userId'] = $('#userId').val();
     data['documentId'] = $('.documentId').eq(idx).val();
+    data['date'] = $('.date').eq(idx).val();
     data['start'] = $('.start').eq(idx).val();
     data['end']= $('.end').eq(idx).val();
     data['price']= $('.price').eq(idx).val();

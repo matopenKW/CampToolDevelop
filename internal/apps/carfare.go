@@ -61,7 +61,11 @@ func view(req *http.Request, client *firestore.Client) (map[string]interface{}, 
 
 	retList := make([]*Carfare, 0, 10)
 
-	list, err := db.SelectDocuments(client, userID)
+	orderBy := func() (string, firestore.Direction) {
+		return "Date", firestore.Desc
+	}
+
+	list, err := db.SelectDocuments(client, userID, orderBy)
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +100,7 @@ func insert(req *http.Request, client *firestore.Client) (map[string]interface{}
 	userID := req.Form["userId"][0]
 
 	carfare := map[string]interface{}{
-		"Date":         "20000101",
+		"Date":         req.Form["date"][0],
 		"End":          req.Form["end"][0],
 		"Start":        req.Form["start"][0],
 		"RoundTripFlg": "0",
@@ -124,7 +128,7 @@ func update(req *http.Request, client *firestore.Client) (map[string]interface{}
 	documentID := req.Form["documentId"][0]
 
 	carfare := map[string]interface{}{
-		"Date":         "20000101",
+		"Date":         req.Form["date"][0],
 		"End":          req.Form["end"][0],
 		"Start":        req.Form["start"][0],
 		"RoundTripFlg": "0",

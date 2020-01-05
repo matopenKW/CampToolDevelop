@@ -39,7 +39,7 @@ table td {
 }
 table td:first-child {
     background: #fbf5f5;
-  }
+}
 
 @media screen and (max-width: 1000px) {
 table {
