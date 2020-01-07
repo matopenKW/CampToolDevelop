@@ -9,7 +9,7 @@
       <div class="card-body">
         <div class="row">
           ユーザーID:
-          <input type="text" id="userId" name="userId" value="{{.userId}}">
+          <input type="text" id="userId" class="form-control" name="userId" value="{{.userId}}">
           <input type="button" id="btnSearch" class="btn btn-primary" value="検索">
         </div>
         <div class="row">
@@ -19,19 +19,21 @@
           <table id="dataTable">
             <tr class="thead">
               <th>日付</th>
-              <th>行き</th>
-              <th>帰り</th>
+              <th>出発</th>
+              <th>到着</th>
               <th>金額</th>
               <th>備考</th>
             </tr>
             {{range .list}}
             <tr class="dataTable-row">
-              <td class="date-label">{{.Date}}</td>
-              <td data-label="日付："><input type="text" name="date" class="date" value="{{.Date}}"></td>
-              <td data-label="行き："><input type="text" name="start" class="start" value="{{.Start}}"></td>
-              <td data-label="帰り："><input type="text" name="end" class="end" value="{{.End}}"></td>
-              <td data-label="金額："><input type="text" name="price" class="price" value="{{.Price}}"></td>
-              <td data-label="備考："><input type="text" name="bikou" class="bikou" value="{{.Bikou}}"></td>
+              <td class="date-label">
+                {{.Date}}
+              </td>
+              <td data-label="日付："><input type="text" name="date" class="date form-control" value="{{.Date}}"></td>
+              <td data-label="出発："><input type="text" name="start" class="start form-control" value="{{.Start}}"></td>
+              <td data-label="到着："><input type="text" name="end" class="end form-control" value="{{.End}}"></td>
+              <td data-label="金額："><input type="text" name="price" class="price form-control" value="{{.Price}}"></td>
+              <td data-label="備考："><input type="text" name="bikou" class="bikou form-control" value="{{.Bikou}}"></td>
               <td class="btn-area text-center">
                 <input type="button" class="btn btn-primary btnInsert" value="登録">
                 <input type="button" class="btn btn-success btnUpdate" value="更新">
@@ -50,11 +52,11 @@
   <table>
     <tr class="dataTable-row">
       <td class="date-label"></td>
-      <td data-label="日付："><input type="text" name="date" class="date" value=""></td>
-      <td data-label="行き："><input type="text" name="start" class="start" value=""></td>
-      <td data-label="帰り："><input type="text" name="end" class="end" value=""></td>
-      <td data-label="金額："><input type="text" name="price" class="price" value=""></td>
-      <td data-label="備考："><input type="text" name="bikou" class="bikou" value=""></td>
+      <td data-label="日付："><input type="text" name="date form-control" class="date" value=""></td>
+      <td data-label="行き："><input type="text" name="start form-control" class="start" value=""></td>
+      <td data-label="帰り："><input type="text" name="end form-control" class="end" value=""></td>
+      <td data-label="金額："><input type="text" name="price form-control" class="price" value=""></td>
+      <td data-label="備考："><input type="text" name="bikou form-control" class="bikou" value=""></td>
       <td class="btn-area text-center">
         <input type="button" class="btn btn-primary btnInsert" value="登録">
         <input type="button" class="btn btn-success btnUpdate" value="更新">
