@@ -47,11 +47,14 @@ func main() {
 	}
 	defer client.Close()
 
-	router.GET("/", htmlForward(router, client, templatePathMap["index"]))
-	router.POST("/", htmlForward(router, client, templatePathMap["index"]))
+	router.GET("/", htmlForward(router, client, templatePathMap["login"]))
+	router.POST("/", htmlForward(router, client, templatePathMap["login"]))
+	router.GET("/login", htmlForward(router, client, templatePathMap["login"]))
+	router.POST("/login", htmlForward(router, client, templatePathMap["login"]))
+	router.POST("/login:login", htmlForward(router, client, templatePathMap["index"]))
 
-	router.GET("/index", htmlForward(router, client, templatePathMap["index"]))
-	router.POST("/index", htmlForward(router, client, templatePathMap["index"]))
+	// router.GET("/index", htmlForward(router, client, templatePathMap["index"]))
+	// router.POST("/index", htmlForward(router, client, templatePathMap["index"]))
 
 	router.GET("/carfare", htmlForward(router, client, templatePathMap["carfare"]))
 	router.POST("/carfare", htmlForward(router, client, templatePathMap["carfare"]))
@@ -74,7 +77,9 @@ func htmlForward(router *gin.Engine, client *firestore.Client, templatePath stri
 		actionPath := util.SubstrBefore(util.SubstrAfter(ctx.Request.URL.Path, "/"), ":")
 
 		switch actionPath {
-		case "", "index":
+		case "", "login":
+			form, err = apps.ExeLogin(ctx.Request, client)
+		case "index":
 			//form, err = apps.ViewIndex(client)
 		case "carfare":
 			form, err = apps.ExeCarfare(ctx.Request, client)
@@ -82,7 +87,7 @@ func htmlForward(router *gin.Engine, client *firestore.Client, templatePath stri
 		}
 
 		if err != nil {
-			log.Fatalf("erro in new db client. reason : %v\n", err)
+			log.Fatalf("error : %v\n", err)
 		}
 		ctx.HTML(200, "base.html", form)
 	}
@@ -99,7 +104,7 @@ func jsonForward(client *firestore.Client) func(ctx *gin.Context) {
 
 		jsonForm, err := json.Marshal(form)
 		if err != nil {
-			log.Fatalf("erro in new db client. reason : %v\n", err)
+			log.Fatalf("failed　to　json　convert : %v\n", err)
 		}
 
 		log.Println(string(jsonForm))
