@@ -4,7 +4,7 @@ import (
 	"cloud.google.com/go/firestore"
 )
 
-func SelectDocuments(client *firestore.Client, userID string) ([]map[string]interface{}, error) {
+func SelectDocuments(client *firestore.Client, userID string, orderBy func() (string, firestore.Direction)) ([]map[string]interface{}, error) {
 
 	retList := make([]map[string]interface{}, 0, 10)
 
@@ -14,6 +14,7 @@ func SelectDocuments(client *firestore.Client, userID string) ([]map[string]inte
 		"Start":        "町田",
 		"RoundTripFlg": "1",
 		"Price":        "300",
+		"DocumentId":   "AAAAAAAAAAAAAAAAAAA",
 	}
 	retList = append(retList, doc)
 	retList = append(retList, doc)
