@@ -79,9 +79,7 @@ function insert(obj){
 
     var url = '/carfare:cmd/insert';
     var done = function(data){
-        console.log(data);
-        var obj = JSON.parse(data);
-        $('.documentId').eq(idx).val(obj.documentID);
+        $('.documentId').eq(idx).val(data.documentID);
         $('.btnInsert').eq(idx).hide();
         $('.btnUpdate').eq(idx).show();
         alert('登録しました');
@@ -152,15 +150,4 @@ function getData(idx){
     data['price']= $('.price').eq(idx).val();
     data['bikou']= $('.bikou').eq(idx).val();
     return data;
-}
-
-function ajaxExecute(url, type, data, done, fail, always){
-    $.ajax({
-        url: url,
-        type: type,
-        data: data
-    })
-    .done(done)
-    .fail(fail)
-    .always(always);
 }
