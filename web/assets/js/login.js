@@ -2,7 +2,14 @@
 $(function(){
 
 	$(document).on('click', '#btnLogin', function(){
-		$('form').submit();
+
+		var done = function(data) {
+			console.log(data);
+		}
+		var fail = function(data){
+			console.log(data);
+		}
+		ajaxExecute('/login:chkLogin', 'POST', {}, done, fail);
 	});
 
 	$(document).on('click', '#forgetPassword', function(){
