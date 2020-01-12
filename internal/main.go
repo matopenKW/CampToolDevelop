@@ -131,9 +131,10 @@ func htmlForward(router *gin.Engine, client *firestore.Client, templatePath stri
 				return
 			}
 		} else {
+			err := errors.New("session time out")
 			log.Printf("error : %v\n", err)
 
-			code, errForm := errorHandring(errors.New("session time out"))
+			code, errForm := errorHandring(err)
 			ctx.HTML(code, "505.html", errForm)
 			return
 		}
