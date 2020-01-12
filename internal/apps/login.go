@@ -1,62 +1,79 @@
 package apps
 
 import (
-	_ "CampToolDevelop/pkg/db"
-	_ "CampToolDevelop/pkg/util"
+	"CampToolDevelop/pkg/db"
+	util "CampToolDevelop/pkg/util"
 	"cloud.google.com/go/firestore"
-	_ "context"
 
-	_ "errors"
-	_ "log"
+	"errors"
+
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
+
+	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 )
 
-func ExeLogin(req *http.Request, client *firestore.Client) (map[string]interface{}, error) {
+func Login(ctx *gin.Context) (map[string]interface{}, error) {
+
+	req := ctx.Request
 
 	req.ParseForm()
 
-	mailAdress := req.Form["mailAdress"]
-	password := req.Form["password"]
-	if mailAdress == nil || len(mailAdress) != 1 {
-		return nil, nil
+	uid := req.Form["uid"]
 
-	} else if password == nil || len(password) != 1 {
-
+	if isBlank(uid) {
+		return nil, errors.New("ログイン情報が不正です。")
 	}
+
+	auth, err := db.OpenAuth()
+	if err != nil {
+		return nil, err
+	}
+
+	userRec, err := db.GetUserRecord(auth, uid[0])
+
+	if err != nil {
+		return nil, err
+	}
+
+	userInfo := *userRec.UserInfo
+
+	if &userInfo == nil {
+		return nil, errors.New("ユーザー情報が不正です")
+	}
+
+	log.Println(userInfo)
+
+	// code from README
+	r := gin.Default()
+	store := cookie.NewStore([]byte("secret"))
+	r.Use(sessions.Sessions("mysession", store))
+
+	session := sessions.Default(ctx)
+
+	if session.Get("hello") != "world" {
+		session.Set("hello", "world")
+		session.Save()
+	}
+
+	return map[string]interface{}{
+		"TITLE":    "LOGIN",
+		"UserInfo": userInfo,
+	}, nil
+}
+
+func ExeLogin(req *http.Request, client *firestore.Client) (map[string]interface{}, error) {
+
+	cmd := util.SubstrAfter(req.URL.Path, ":")
+
+	log.Println(cmd)
 
 	return map[string]interface{}{}, nil
 
-	// url := util.SubstrAfter(req.URL.Path, ":")
-
-	// log.Println(url)
-
-	// if url == "login" {
-	// 	req.ParseForm()
-
-	// 	email := req.Form["email"][0]
-	// 	password := req.Form["password"][0]
-
-	// 	log.Println(email)
-	// 	log.Println(password)
-
-	// 	// ログイン時にエラーの場合
-	// 	if true {
-	// 		return nil, errors.New("login error")
-	// 	}
-
-	// 	return map[string]interface{}{
-	// 		"title": "LOGIN",
-	// 	}, errors.New("invalid command")
-
-	// } else {
-	// 	return map[string]interface{}{}, nil
-	// }
 }
 
-func login(req *http.Request, client *firestore.Client) (map[string]interface{}, error) {
-	return map[string]interface{}{
-		"title":  "LOGIN",
-		"userId": "userID",
-		"list":   "retList",
-	}, nil
+func isBlank(param []string) bool {
+	return param == nil || len(param) != 1 || param[0] == ""
 }

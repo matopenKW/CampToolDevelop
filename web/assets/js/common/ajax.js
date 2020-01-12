@@ -7,12 +7,14 @@ function ajaxExecute(url, type, data, done, fail, always){
     })
     .done(function(data){
         console.log(data);
-        //var dataObj = JSON.parse(data); 
         done(data.responseJSON);
     })
     .fail(function(data){
         console.log(data);
-        //var dataObj = JSON.parse(data); 
+        // var errMssage = data.responseJSON.errMssage;
+        // if (errMssage) {
+        //     alert(errMssage);
+        // }
         fail(data.responseJSON);
     })
     .always(always);

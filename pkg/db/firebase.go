@@ -4,15 +4,34 @@ import (
 	"context"
 
 	"cloud.google.com/go/firestore"
-	firebase "firebase.google.com/go"
+	"firebase.google.com/go"
+	"firebase.google.com/go/auth"
 	"google.golang.org/api/option"
 
+	"errors"
 	"google.golang.org/api/iterator"
 )
 
 const keyjson = "../pkg/conf/key.json"
 
-func OpenFirebase() (*firestore.Client, error) {
+func OpenAuth() (*auth.Client, error) {
+	ctx := context.Background()
+
+	opt := option.WithCredentialsFile(keyjson)
+	app, err := firebase.NewApp(context.Background(), nil, opt)
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := app.Auth(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}
+
+func OpenFirestore() (*firestore.Client, error) {
 	opt := option.WithCredentialsFile(keyjson)
 	ctx := context.Background()
 	app, err := firebase.NewApp(ctx, nil, opt)
@@ -27,13 +46,30 @@ func OpenFirebase() (*firestore.Client, error) {
 	return client, nil
 }
 
+func GetUserRecord(client *auth.Client, uid string) (*auth.UserRecord, error) {
+	user, err := client.GetUser(context.Background(), uid)
+	if err != nil {
+		return nil, err
+	}
+	return user, err
+}
+
+func UpdateUserInfo(client *auth.Client, uid string, userToUodate *auth.UserToUpdate) (*auth.UserRecord, error) {
+	user, err := client.UpdateUser(context.Background(), uid, userToUodate)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
 func SelectDocuments(client *firestore.Client, userID string, orderBy func() (string, firestore.Direction)) ([]map[string]interface{}, error) {
 
 	list := make([]map[string]interface{}, 0, 10)
 
 	colle := client.Collection(userID)
 	if colle == nil {
-		return nil, nil
+		return nil, errors.New("failed to connect")
 	}
 
 	iter := colle.OrderBy(orderBy()).Documents(context.Background())

@@ -14,6 +14,11 @@ import (
 	"io/ioutil"
 
 	"encoding/json"
+
+	"net/http"
+
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 )
 
 var templatePathMap map[string]string
@@ -36,12 +41,17 @@ func init() {
 func main() {
 
 	router := gin.Default()
+
+	r := gin.Default()
+	store := cookie.NewStore([]byte("secret"))
+	r.Use(sessions.Sessions("mysession", store))
+
 	router.Static("../web", ".././web")
 
 	router.LoadHTMLGlob("../templates/*.html")
 
-	// firebase接続
-	client, err := db.OpenFirebase()
+	// firestore
+	client, err := db.OpenFirestore()
 	if err != nil {
 		log.Fatalf("erro in new db client. reason : %v\n", err)
 	}
@@ -53,11 +63,7 @@ func main() {
 	router.POST("/login", htmlForward(router, client, templatePathMap["login"]))
 
 	// Ajaxでチェックをかましてからサブミット→サブミット時にサイドチェックで　クッキー作成とHTMLフォワード
-	router.POST("/login:chkLogin", jsonForward(client))
-	//router.POST("/login:login", login(router, client))
-
-	// router.GET("/index", htmlForward(router, client, templatePathMap["index"]))
-	// router.POST("/index", htmlForward(router, client, templatePathMap["index"]))
+	router.POST("/login:cmd/login", login)
 
 	router.GET("/carfare", htmlForward(router, client, templatePathMap["carfare"]))
 	router.POST("/carfare", htmlForward(router, client, templatePathMap["carfare"]))
@@ -66,6 +72,17 @@ func main() {
 	router.POST("/carfare:cmd/delete", jsonForward(client))
 
 	router.Run()
+}
+
+func login(ctx *gin.Context) {
+
+	apps.Login(ctx)
+
+	ctx.Redirect(http.StatusMovedPermanently, "/carfare")
+
+	// forward := htmlForward(router, client, templatePathMap["login"])
+	// forward(ctx)
+
 }
 
 func htmlForward(router *gin.Engine, client *firestore.Client, templatePath string) func(ctx *gin.Context) {
@@ -89,12 +106,16 @@ func htmlForward(router *gin.Engine, client *firestore.Client, templatePath stri
 		if err != nil {
 			log.Printf("error : %v\n", err)
 			code, errForm := errorHandring(err)
+
+			html := template.Must(template.ParseFiles(templatePath, templatePathMap["500"]))
+			router.SetHTMLTemplate(html)
+
 			ctx.HTML(code, "base.html", errForm)
 		} else {
 			html := template.Must(template.ParseFiles(templatePath, templatePathMap["base"]))
 			router.SetHTMLTemplate(html)
 
-			ctx.HTML(200, "base.html", form)
+			ctx.HTML(http.StatusOK, "base.html", form)
 		}
 	}
 }
@@ -118,13 +139,13 @@ func jsonForward(client *firestore.Client) func(ctx *gin.Context) {
 		}
 
 		setJsonFunc := setJson(ctx)
-
 		if err != nil {
-			log.Printf("failed　to　json　convert : %v\n", err)
+			log.Printf("error : %v\n", err)
 			setJsonFunc(errorHandring(err))
 		} else {
 			jsonForm, err := json.Marshal(form)
 			if err != nil {
+				log.Printf("failed　to　json　convert : %v\n", err)
 				setJsonFunc(errorHandring(err))
 			} else {
 				log.Println(string(jsonForm))
@@ -135,7 +156,7 @@ func jsonForward(client *firestore.Client) func(ctx *gin.Context) {
 }
 
 func errorHandring(err error) (code int, form map[string]interface{}) {
-	return 500, map[string]interface{}{
+	return http.StatusInternalServerError, map[string]interface{}{
 		"errMssage": "error : " + err.Error(),
 	}
 }
