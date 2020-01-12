@@ -17,17 +17,31 @@
 
   <!-- Common js -->
   <script src="/web/assets/js/common/ajax.js"></script>
-
+ 
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/4.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.10.1/firebase-auth.js"></script>
+  <script src="/web/assets/js/common/firebase.js"></script>
+ 
 </head>
 <body>
   <header>
-      <h2>KazuのService</h2>      
+    <div class="d-flex">
+      <div class="service-title">
+        <h2>KazuのService</h2>
+      </div>
+      <div class="m-1">
+        <form id="logoutForm" method="POST" action="/logout">
+          <input type="button" id="btnLogout" class="btn btn-danger" value="ログアウト">
+        </form>
+      </div>
+    </div>
   </header>
-
-  <h5>[{{.userInfo.DisplayName}}]さん</h5>
   <div id="content">
     {{template "content" .}}
   </div>
+
+  <script src="/web/assets/js/common/base.js"></script>
 
 </body>
 </html>

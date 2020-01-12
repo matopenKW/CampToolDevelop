@@ -2,6 +2,14 @@
     font-size: 3vh;
 }
 
+header .row {
+    margin: 0px;
+}
+
+.service-title {
+    width: 77vw;
+}
+
 body {
     background-color: #f8f9fc;
     font-size: 1.25rem;

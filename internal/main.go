@@ -6,6 +6,7 @@ import (
 	"CampToolDevelop/pkg/util"
 	"cloud.google.com/go/firestore"
 	"encoding/json"
+	"errors"
 	"firebase.google.com/go/auth"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -67,6 +68,9 @@ func main() {
 	router.POST("/carfare:cmd/update", jsonForward(client))
 	router.POST("/carfare:cmd/delete", jsonForward(client))
 
+	//  ログアウト
+	router.POST("/logout", logout)
+
 	router.Run()
 }
 
@@ -80,13 +84,23 @@ func viewLogin(router *gin.Engine, client *firestore.Client, templatePath string
 }
 
 func login(ctx *gin.Context) {
+
 	err := apps.Login(ctx)
 	if err != nil {
 		log.Println(err)
-		ctx.Redirect(http.StatusMovedPermanently, "/index")
+		ctx.HTML(http.StatusOK, "505.html", gin.H{})
 	} else {
 		ctx.Redirect(http.StatusMovedPermanently, "/carfare")
 	}
+}
+
+func logout(ctx *gin.Context) {
+	session := sessions.Default(ctx)
+	session.Delete("userId")
+	session.Save()
+
+	log.Println(session.Get("userId"))
+	ctx.Redirect(http.StatusMovedPermanently, "/login")
 }
 
 func htmlForward(router *gin.Engine, client *firestore.Client, templatePath string) func(ctx *gin.Context) {
@@ -99,7 +113,7 @@ func htmlForward(router *gin.Engine, client *firestore.Client, templatePath stri
 
 		session := sessions.Default(ctx)
 		userId := session.Get("userId")
-		log.Println(userId)
+		log.Printf("userId : %v\n", userId)
 
 		authClient, err := db.OpenAuth()
 		if err != nil {
@@ -108,9 +122,20 @@ func htmlForward(router *gin.Engine, client *firestore.Client, templatePath stri
 
 		var userRec *auth.UserRecord
 		if userId != nil {
-			userRec, _ = db.GetUserRecord(authClient, userId.(string))
+			userRec, err = db.GetUserRecord(authClient, userId.(string))
+			if err != nil {
+				log.Printf("error : %v\n", err)
+
+				code, errForm := errorHandring(err)
+				ctx.HTML(code, "505.html", errForm)
+				return
+			}
 		} else {
-			log.Println("session time out")
+			log.Printf("error : %v\n", err)
+
+			code, errForm := errorHandring(errors.New("session time out"))
+			ctx.HTML(code, "505.html", errForm)
+			return
 		}
 
 		switch actionPath {
@@ -123,12 +148,9 @@ func htmlForward(router *gin.Engine, client *firestore.Client, templatePath stri
 
 		if err != nil {
 			log.Printf("error : %v\n", err)
+
 			code, errForm := errorHandring(err)
-
-			html := template.Must(template.ParseFiles(templatePath, templatePathMap["500"]))
-			router.SetHTMLTemplate(html)
-
-			ctx.HTML(code, "base.html", errForm)
+			ctx.HTML(code, "505.html", errForm)
 		} else {
 
 			if userRec.UserInfo.DisplayName == "" {
