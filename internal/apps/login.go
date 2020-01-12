@@ -13,9 +13,7 @@ func Login(ctx *gin.Context) error {
 	req := ctx.Request
 
 	req.ParseForm()
-
 	uid := req.Form["uid"]
-
 	if isBlank(uid) {
 		return errors.New("ログイン情報が不正です。")
 	}
@@ -26,20 +24,16 @@ func Login(ctx *gin.Context) error {
 	}
 
 	userRec, err := db.GetUserRecord(auth, uid[0])
-
 	if err != nil {
 		return err
 	}
 
 	userInfo := *userRec.UserInfo
-
 	if &userInfo == nil {
 		return errors.New("ユーザー情報が不正です")
 	}
 
-	log.Println(userInfo)
 	session := sessions.Default(ctx)
-
 	if session.Get("userId") != userInfo.UID {
 		session.Set("userId", userInfo.UID)
 		session.Save()
