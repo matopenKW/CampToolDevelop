@@ -67,7 +67,7 @@ func view(req *http.Request, client *firestore.Client, userInfo *auth.UserInfo) 
 			Start:        v["Start"].(string),
 			RoundTripFlg: v["RoundTripFlg"].(string),
 			Price:        v["Price"].(string),
-			Bikou:        "",
+			Bikou:        v["Bikou"].(string),
 			DocumentId:   v["DocumentId"].(string),
 		}
 
