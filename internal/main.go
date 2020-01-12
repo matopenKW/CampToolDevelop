@@ -1,24 +1,19 @@
 package main
 
 import (
-	"cloud.google.com/go/firestore"
-	"html/template"
-
 	"CampToolDevelop/internal/apps"
 	"CampToolDevelop/pkg/db"
 	"CampToolDevelop/pkg/util"
-
-	"log"
-
-	"github.com/gin-gonic/gin"
-	"io/ioutil"
-
+	"cloud.google.com/go/firestore"
 	"encoding/json"
-
-	"net/http"
-
+	"firebase.google.com/go/auth"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
+	"github.com/gin-gonic/gin"
+	"html/template"
+	"io/ioutil"
+	"log"
+	"net/http"
 )
 
 var templatePathMap map[string]string
@@ -42,12 +37,12 @@ func main() {
 
 	router := gin.Default()
 
-	r := gin.Default()
+	// setting session
 	store := cookie.NewStore([]byte("secret"))
-	r.Use(sessions.Sessions("mysession", store))
+	router.Use(sessions.Sessions("session", store))
 
+	// setting template
 	router.Static("../web", ".././web")
-
 	router.LoadHTMLGlob("../templates/*.html")
 
 	// firestore
@@ -57,12 +52,13 @@ func main() {
 	}
 	defer client.Close()
 
-	router.GET("/", htmlForward(router, client, templatePathMap["login"]))
-	router.POST("/", htmlForward(router, client, templatePathMap["login"]))
-	router.GET("/login", htmlForward(router, client, templatePathMap["login"]))
-	router.POST("/login", htmlForward(router, client, templatePathMap["login"]))
+	// ログイン画面
+	router.GET("/", viewLogin(router, client, templatePathMap["login"]))
+	router.POST("/", viewLogin(router, client, templatePathMap["login"]))
+	router.GET("/login", viewLogin(router, client, templatePathMap["login"]))
+	router.POST("/login", viewLogin(router, client, templatePathMap["login"]))
 
-	// Ajaxでチェックをかましてからサブミット→サブミット時にサイドチェックで　クッキー作成とHTMLフォワード
+	// ログイン処理
 	router.POST("/login:cmd/login", login)
 
 	router.GET("/carfare", htmlForward(router, client, templatePathMap["carfare"]))
@@ -74,15 +70,23 @@ func main() {
 	router.Run()
 }
 
+func viewLogin(router *gin.Engine, client *firestore.Client, templatePath string) func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		html := template.Must(template.ParseFiles(templatePath, templatePathMap["base"]))
+		router.SetHTMLTemplate(html)
+
+		ctx.HTML(http.StatusOK, "base.html", gin.H{})
+	}
+}
+
 func login(ctx *gin.Context) {
-
-	apps.Login(ctx)
-
-	ctx.Redirect(http.StatusMovedPermanently, "/carfare")
-
-	// forward := htmlForward(router, client, templatePathMap["login"])
-	// forward(ctx)
-
+	err := apps.Login(ctx)
+	if err != nil {
+		log.Println(err)
+		ctx.Redirect(http.StatusMovedPermanently, "/index")
+	} else {
+		ctx.Redirect(http.StatusMovedPermanently, "/carfare")
+	}
 }
 
 func htmlForward(router *gin.Engine, client *firestore.Client, templatePath string) func(ctx *gin.Context) {
@@ -93,13 +97,27 @@ func htmlForward(router *gin.Engine, client *firestore.Client, templatePath stri
 
 		actionPath := util.SubstrBefore(util.SubstrAfter(ctx.Request.URL.Path, "/"), ":")
 
+		session := sessions.Default(ctx)
+		userId := session.Get("userId")
+		log.Println(userId)
+
+		authClient, err := db.OpenAuth()
+		if err != nil {
+			log.Println(err)
+		}
+
+		var userRec *auth.UserRecord
+		if userId != nil {
+			userRec, _ = db.GetUserRecord(authClient, userId.(string))
+		} else {
+			log.Println("session time out")
+		}
+
 		switch actionPath {
-		case "", "login":
-			form, err = apps.ExeLogin(ctx.Request, client)
 		case "index":
 			//form, err = apps.ViewIndex(client)
 		case "carfare":
-			form, err = apps.ExeCarfare(ctx.Request, client)
+			form, err = apps.ExeCarfare(ctx.Request, client, userRec.UserInfo)
 		default:
 		}
 
@@ -112,6 +130,13 @@ func htmlForward(router *gin.Engine, client *firestore.Client, templatePath stri
 
 			ctx.HTML(code, "base.html", errForm)
 		} else {
+
+			if userRec.UserInfo.DisplayName == "" {
+				userRec.UserInfo.DisplayName = "未設定"
+			}
+
+			form["userInfo"] = userRec.UserInfo
+
 			html := template.Must(template.ParseFiles(templatePath, templatePathMap["base"]))
 			router.SetHTMLTemplate(html)
 
@@ -129,12 +154,9 @@ func jsonForward(client *firestore.Client) func(ctx *gin.Context) {
 		actionPath := util.SubstrBefore(util.SubstrAfter(ctx.Request.URL.Path, "/"), ":")
 
 		switch actionPath {
-		case "login":
-			form, err = apps.ExeLogin(ctx.Request, client)
 		case "index":
-
 		case "carfare":
-			form, err = apps.ExeCarfare(ctx.Request, client)
+			form, err = apps.ExeCarfare(ctx.Request, client, nil)
 		default:
 		}
 

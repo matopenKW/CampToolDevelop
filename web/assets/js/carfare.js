@@ -2,9 +2,9 @@ var direction, position;
 
 $(function(){
 
-    $(document).on('click', '#btnSearch', function(){
-        search();
-    });
+    // $(document).on('click', '#btnSearch', function(){
+    //     search();
+    // });
 
     $(document).on('click', '#btnAdd', function(){
         addRow();

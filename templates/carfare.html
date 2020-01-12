@@ -7,12 +7,11 @@
         <h6 class="m-0 font-weight-bold text-primary">交通費</h6>
       </div>
       <div class="card-body">
-        <div class="row">
-          ユーザーID:
-          <input type="text" id="userId" class="form-control" name="userId" value="{{.userId}}">
+        <!-- <div class="row">
           <input type="button" id="btnSearch" class="btn btn-primary" value="検索">
-        </div>
+        </div> -->
         <div class="row">
+          <input type="hidden" id="userId" value="{{.userId}}">
           <input type="button" id="btnAdd" class="btn btn-primary" value="行追加">
         </div>
         <div class="row">
@@ -52,11 +51,11 @@
   <table>
     <tr class="dataTable-row">
       <td class="date-label"></td>
-      <td data-label="日付："><input type="text" name="date form-control" class="date" value=""></td>
-      <td data-label="行き："><input type="text" name="start form-control" class="start" value=""></td>
-      <td data-label="帰り："><input type="text" name="end form-control" class="end" value=""></td>
-      <td data-label="金額："><input type="text" name="price form-control" class="price" value=""></td>
-      <td data-label="備考："><input type="text" name="bikou form-control" class="bikou" value=""></td>
+      <td data-label="日付："><input type="text" name="date" class="date form-control" value=""></td>
+      <td data-label="出発："><input type="text" name="start" class="start form-control" value=""></td>
+      <td data-label="到着："><input type="text" name="end" class="end form-control" value=""></td>
+      <td data-label="金額："><input type="text" name="price" class="price form-control" value=""></td>
+      <td data-label="備考："><input type="text" name="bikou" class="bikou form-control" value=""></td>
       <td class="btn-area text-center">
         <input type="button" class="btn btn-primary btnInsert" value="登録">
         <input type="button" class="btn btn-success btnUpdate" value="更新">

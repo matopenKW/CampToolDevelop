@@ -5,6 +5,7 @@ import (
 	"CampToolDevelop/pkg/util"
 	"cloud.google.com/go/firestore"
 	"context"
+	"firebase.google.com/go/auth"
 
 	"errors"
 	"log"
@@ -21,12 +22,12 @@ type Carfare struct {
 	DocumentId   string
 }
 
-func ExeCarfare(req *http.Request, client *firestore.Client) (map[string]interface{}, error) {
+func ExeCarfare(req *http.Request, client *firestore.Client, userInfo *auth.UserInfo) (map[string]interface{}, error) {
 
 	url := util.SubstrAfter(req.URL.Path, ":")
 
 	if url == "/carfare" {
-		return view(req, client)
+		return view(req, client, userInfo)
 	} else {
 		cmd := util.SubstrAfter(util.SubstrAfter(req.URL.Path, ":"), "/")
 		log.Println(cmd)
@@ -44,20 +45,9 @@ func ExeCarfare(req *http.Request, client *firestore.Client) (map[string]interfa
 	}
 }
 
-func view(req *http.Request, client *firestore.Client) (map[string]interface{}, error) {
+func view(req *http.Request, client *firestore.Client, userInfo *auth.UserInfo) (map[string]interface{}, error) {
 
 	req.ParseForm()
-
-	userID := ""
-	if req.Form["userId"] != nil {
-		userID = req.Form["userId"][0]
-	} else {
-		return map[string]interface{}{
-			"title":  "CARFACE",
-			"userId": userID,
-			"list":   make([]*Carfare, 0, 10),
-		}, nil
-	}
 
 	retList := make([]*Carfare, 0, 10)
 
@@ -65,7 +55,7 @@ func view(req *http.Request, client *firestore.Client) (map[string]interface{}, 
 		return "Date", firestore.Desc
 	}
 
-	list, err := db.SelectDocuments(client, userID, orderBy)
+	list, err := db.SelectDocuments(client, userInfo.UID, orderBy)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +76,7 @@ func view(req *http.Request, client *firestore.Client) (map[string]interface{}, 
 
 	return map[string]interface{}{
 		"title":  "CARFACE",
-		"userId": userID,
+		"userId": userInfo.UID,
 		"list":   retList,
 	}, nil
 }

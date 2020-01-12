@@ -7,7 +7,7 @@ function ajaxExecute(url, type, data, done, fail, always){
     })
     .done(function(data){
         console.log(data);
-        done(data.responseJSON);
+        done(data);
     })
     .fail(function(data){
         console.log(data);
@@ -15,7 +15,7 @@ function ajaxExecute(url, type, data, done, fail, always){
         // if (errMssage) {
         //     alert(errMssage);
         // }
-        fail(data.responseJSON);
+        fail(data);
     })
     .always(always);
 }
