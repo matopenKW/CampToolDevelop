@@ -3,8 +3,9 @@ package apps
 import (
 	"CampToolDevelop/pkg/db"
 	"CampToolDevelop/pkg/util"
-	"cloud.google.com/go/firestore"
 	"context"
+
+	"cloud.google.com/go/firestore"
 	"firebase.google.com/go/auth"
 
 	"errors"
@@ -14,8 +15,8 @@ import (
 
 type Carfare struct {
 	Date         string
-	End          string
 	Start        string
+	End          string
 	RoundTripFlg string
 	Price        string
 	Bikou        string
